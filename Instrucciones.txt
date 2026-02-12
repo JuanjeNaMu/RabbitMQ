@@ -1,0 +1,41 @@
+🐳 TERMINAL 1 – WSL (RabbitMQ)
+bash
+# Iniciar contenedor RabbitMQ (si está detenido)
+docker start rabbitmq
+
+se ubica en:  
+http://localhost:15672
+
+# Verificar que está corriendo
+docker ps
+
+🟢 TERMINAL 2 – POWERSHELL (Producer - Microservicio de Pedidos)
+powershell
+cd C:\Users\jjnam\RabbitMQ
+node producer.js
+
+📧 TERMINAL 3 – POWERSHELL (Consumer - Microservicio de Notificaciones)
+powershell
+cd C:\Users\jjnam\RabbitMQ
+node consumer.js
+
+📤 TERMINAL 4 – POWERSHELL (Cliente - Enviar 10 pedidos)
+powershell
+cd C:\Users\jjnam\RabbitMQ
+1..10 | ForEach-Object {
+    $body = @"
+{"id": $_ , "producto": "Item $_", "email": "pedido$_@hlanz.es"}
+"@
+    Write-Host "🚀 Enviando pedido $_" -ForegroundColor Green
+    Invoke-RestMethod -Uri "http://localhost:3000/comprar" -Method Post -ContentType "application/json" -Body $body
+}
+
+🛑 PARA DETENER (en orden inverso):
+
+Terminal 4: ya terminó
+
+Terminal 3: Ctrl+C
+
+Terminal 2: Ctrl+C
+
+Terminal 1: docker stop rabbitmq
